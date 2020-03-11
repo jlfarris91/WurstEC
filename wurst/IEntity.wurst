@@ -1,0 +1,8 @@
+package IEntity
+import IComposite
+
+// ============================================================================
+public interface IEntity extends IComposite
+  function getIsAttached() returns bool
+  function onAttached()
+  function onDetached()

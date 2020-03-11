@@ -1,0 +1,9 @@
+package DefaultUnitEntityFactory
+import IUnitEntity
+import IUnitEntityFactory
+
+// ============================================================================
+public class DefaultUnitEntityFactory implements IUnitEntityFactory
+
+  function createEntity(unit u) returns IUnitEntity
+    return new UnitEntity()

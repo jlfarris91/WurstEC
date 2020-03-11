@@ -1,0 +1,13 @@
+package IUnitEntityManager
+import IUnitEntity
+
+// ============================================================================
+public interface IUnitEntityManager
+  function hasEntity(unit u) returns bool
+  function getEntity(unit u) returns IUnitEntity
+  function getEntityRequired(unit u) returns IUnitEntity
+  function registerUnitEntityFactory(IUnitEntityFactory factory)
+  function unregisterUnitEntityFactory(IUnitEntityFactory factory)
+  function constructEntity(unit u) returns IUnitEntity
+  function attach(IUnitEntity entity, unit unitToAttachTo) returns bool
+  function detach(IUnitEntity entity) returns bool

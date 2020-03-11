@@ -1,0 +1,34 @@
+package Entities
+import public IEntity
+
+public IUnitEntityManager g_unitEntityManagerInstance
+
+
+
+// ============================================================================
+public function unit.hasEntity() returns bool
+  return g_unitEntityManagerInstance.hasEntity(u)
+
+// ============================================================================
+public function unit.getEntity() returns IUnitEntity
+  return g_unitEntityManagerInstance.getEntity(u)
+
+// ============================================================================
+public function unit.getEntityRequired() returns IUnitEntity
+  return g_unitEntityManagerInstance.getEntityRequired(u)
+
+// ============================================================================
+function onUnitKilled()
+  let dyingUnit = GetDyingUnit()
+  
+  let metadata = dyingUnit.getMetadata() castTo UnitMetadata
+  if (metadata == null)
+    return
+
+  metadata.onKilled()
+  Log.debug("[onUnitKilled] " + dyingUnit.getName() + " was killed")
+
+// ============================================================================
+init
+  g_unitMetadataFactories = 
+  registerPlayerUnitEvent(EVENT_PLAYER_UNIT_DEATH, function onUnitKilled)

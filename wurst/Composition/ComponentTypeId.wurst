@@ -1,0 +1,3 @@
+package ComponentTypeId
+
+public tuple TypeId(int id)

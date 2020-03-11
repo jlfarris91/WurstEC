@@ -1,0 +1,6 @@
+package IUnitEntity
+import IEntity
+
+// ============================================================================
+public interface IUnitEntity extends IEntity
+  function getUnit() returns unit

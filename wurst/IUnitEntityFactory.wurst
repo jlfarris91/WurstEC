@@ -1,0 +1,6 @@
+package IUnitEntityFactory
+import IUnitEntity
+
+// ============================================================================
+public interface IUnitEntityFactory
+  function createEntity(unit u) returns IUnitEntity

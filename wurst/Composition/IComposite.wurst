@@ -1,0 +1,9 @@
+package IComposite
+import IComponent
+import ComponentTypeId
+
+// ============================================================================
+public interface IComposite
+  function getComponent(TypeId componentTypeId) returns IComponent
+  function addComponent(IComponent component) returns IComponent
+  function removeComponent(IComponent component) returns bool

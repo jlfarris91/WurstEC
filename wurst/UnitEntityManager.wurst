@@ -1,0 +1,124 @@
+package EntityManager
+import LinkedList
+import IUnitEntityFactory
+import IUnitEntity
+import ErrorHandling
+import UnitEntity
+import UnitIndexer
+
+IUnitEntity array g_unitEntities
+
+// ============================================================================
+public class EntityManager
+  private LinkedList<IUnitEntityFactory> m_unitEntityFactories
+
+  // --------------------------------------------------------------------------
+  construct()
+    m_unitEntityFactories = new LinkedList<IUnitEntityFactory>()
+
+  // --------------------------------------------------------------------------
+  ondestroy
+    for factory in m_unitEntityFactories
+      destroy factory
+    destroy m_unitEntityFactories
+    m_unitEntityFactories = null
+
+  // --------------------------------------------------------------------------
+  function getEntity(unit u) returns IUnitEntity
+    let index = u.getIndex()
+    if (index == 0)
+      return null
+    return g_unitEntities[index]
+
+  // --------------------------------------------------------------------------
+  function getEntityRequired(unit u) returns IUnitEntity
+    let entity = getEntity(u)
+    if (entity == null)
+      error("Unit " + u.getName() + " is not attached to a UnitEntity")
+    return entity
+
+  // --------------------------------------------------------------------------
+  function hasEntity(unit u) returns bool
+    return getEntity(u) != null
+
+  // --------------------------------------------------------------------------
+  function registerUnitEntityFactory(IUnitEntityFactory factory)
+    
+    if (factory == null)
+      error("Argument 'factory' cannot be null")
+
+    m_unitEntityFactories.addAt(factory, 0)
+
+  // --------------------------------------------------------------------------
+  function unregisterUnitEntityFactory(IUnitEntityFactory factory)
+    if (factory == null)
+      error("Argument 'factory' cannot be null")
+
+    m_unitEntityFactories.remove(factory)
+
+  // --------------------------------------------------------------------------
+  function constructEntity(unit unitToConstructEntityFor) returns IUnitEntity
+    if (unitToConstructEntityFor == null)
+      error("Argument 'unitToConstructEntityFor' cannot be null")
+
+    IUnitEntity entity = null
+    for factory in m_unitEntityFactories
+      let uu = factory.createEntity(unitToConstructEntityFor)
+      if (uu != null)
+        entity = uu
+        break
+
+    if (entity == null)
+      entity = new UnitEntity()
+      Log.warn("No unit entity factory handled unit " + unitToConstructEntityFor.getName())
+      attach(entity, unitToConstructEntityFor)
+
+    return entity
+
+  // --------------------------------------------------------------------------
+  function attach(IUnitEntity entity, unit unitToAttachTo) returns bool
+    if (entity == null)
+      error("Argument 'entity' cannot be null")
+
+    if (unitToAttachTo == null)
+      error("Argument 'unitToAttachTo' cannot be null")
+
+    let currentlyAttached = entity.getUnit()
+    if (currentlyAttached != null)
+
+      // The entity is already attached to this unit so just return
+      if (currentlyAttached == unitToAttachTo)
+        return false
+
+      // Detach from the previous entity before trying to attach to a different entity
+      detach(entity)
+
+    // This unit was not indexed for whatever reason
+    let newIndex = unitToAttachTo.getIndex()
+    if (newIndex == 0)
+      error("Attempting to attach to a deindexed unit")
+      return false
+
+    g_unitEntities[newIndex] = entity
+    entity.onAttached()
+
+    Log.debug("Attached UnitEntity to " + unitToAttachTo.getName())
+
+    return true
+
+  // --------------------------------------------------------------------------
+  function detach(IUnitEntity entity) returns bool
+    if (entity == null)
+      error("Argument 'entity' cannot be null")
+
+    let currentAttached = entity.getUnit()
+    if (currentAttached == null)
+      return false
+
+    let currentIndex = currentAttached.getIndex()
+    if (currentIndex == 0)
+      error("UnitEntity was assigned an unindexed unit")
+      return false
+    
+    g_unitEntities[currentIndex] = null
+    entity.onDetached()

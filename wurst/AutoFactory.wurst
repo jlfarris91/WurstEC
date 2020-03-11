@@ -1,0 +1,120 @@
+package AutoFactory
+import ErrorHandling
+import IUnitEntity
+
+int array g_ignoreIndexingCounter
+
+// ============================================================================
+public function createUnitTLS(player owner, integer unitId, real x, real y, real face) returns unit
+  return createUnit(owner, unitId, x, y, face)
+
+// ============================================================================
+public function createUnitTLS(player owner, integer unitId, vec2 pos, real face) returns unit
+  return createUnit(owner, unitId, pos.x, pos.y, face)
+
+// ============================================================================
+public function createUnit(IUnitEntity metadata, player owner, integer unitId, real x, real y, real face) returns unit
+  if (metadata == null)
+    error("Argument 'metadata' cannot be null")
+
+  let oldUnit = metadata.getUnit()
+  metadata.detach()
+
+  startIgnoreIndexing(owner)
+  let newUnit = createEntity(owner, unitId, x, y, face)
+  stopIgnoreIndexing(owner)
+
+  if (newUnit.hasEntity())
+    error("Unit should not be attached to an entity yet")
+    return null
+
+  metadata.attach(newUnit)
+
+  Log.debug("[createUnitTLS] Reattached metadata from unit " + (oldUnit != null ? oldUnit.getName() : "null") + " to unit " + newUnit.getName())
+
+  return newUnit
+
+// ============================================================================
+public function replaceUnit(unit whichUnit, integer newUnitId, integer unitStateMethod) returns unit
+  if (whichUnit == null)
+    error("Argument 'whichUnit' cannot be null")
+
+  let oldUnitName = whichUnit.getName()
+  let existingMetadata = whichUnit.getMetadata()
+  let owningPlayer = whichUnit.getOwner()
+
+  if (existingMetadata != null)
+    existingMetadata.detach()
+    startIgnoreIndexing(owningPlayer)
+  else
+    Log.debug("[replaceUnitTLS] Replacing unit " + whichUnit.getName() + " with no attached entity")
+
+  let newUnit = replaceUnit(whichUnit, newUnitId, unitStateMethod)
+
+  if (newUnit.hasEntity())
+    error("Unit should not be attached to an entity yet")
+  
+  if (existingMetadata != null)
+    stopIgnoreIndexing(owningPlayer)
+    existingMetadata.attach(newUnit)
+
+  Log.debug("[replaceUnitTLS] Reattached entity from unit " + oldUnitName + " to unit " + newUnit.getName())
+    
+  return newUnit
+
+// ============================================================================
+function onUnitIndexed(unit indexingUnit)
+  if (isIgnoringIndexing(indexingUnit.getOwner()))
+    Log.debug("[onUnitIndexed] Ignoring indexed unit")
+    return
+
+  let index = indexingUnit.getIndex()
+  
+  var metadata = g_unitMetadatas[index]
+  if (metadata != null)
+    error("Metadata already exists for unit " + indexingUnit.getName())
+    return
+
+  metadata = constructUnitMetadata(indexingUnit)
+  g_unitMetadatas[index] = metadata
+
+  Log.debug("[onUnitIndexed] Created metadata for unit " + indexingUnit.getName())
+
+// ============================================================================
+function onUnitDeindexed(unit indexingUnit)
+  if (isIgnoringIndexing(indexingUnit.getOwner()))
+    Log.debug("[onUnitDeindexed] Ignoring deindexed unit")
+    return
+
+  let index = indexingUnit.getIndex()
+  let metadata = indexingUnit.getMetadata()
+
+  if (metadata != null)
+    destroy metadata
+    Log.debug("[onUnitDeindexed] Destroyed entity for unit " + indexingUnit.getName())
+
+  g_unitMetadatas[index] = null
+
+// ============================================================================
+function startIgnoreIndexing(player p)
+  g_ignoreIndexingCounter[p.getId()]++
+  Log.debug("Start ignoring indexing " + I2S(g_ignoreIndexingCounter[p.getId()]))
+
+// ============================================================================
+function stopIgnoreIndexing(player p)
+  g_ignoreIndexingCounter[p.getId()]--
+  Log.debug("Stop ignoring indexing " + I2S(g_ignoreIndexingCounter[p.getId()]))
+
+// ============================================================================
+function isIgnoringIndexing(player p) returns bool
+  return g_ignoreIndexingCounter[p.getId()] > 0
+
+// ============================================================================
+init
+  g_unitMetadataFactories = new LinkedList<IUnitEntityFactory>()
+
+  for i = 0 to 24
+    g_ignoreIndexingCounter[i] = 0
+
+  onUnitIndex(() -> onUnitIndexed(getIndexingUnit()))
+  onUnitDeindex(() -> onUnitDeindexed(getIndexingUnit()))

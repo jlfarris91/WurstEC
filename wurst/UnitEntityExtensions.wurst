@@ -1,0 +1,761 @@
+package UnitEntityExtensions
+import initlater IUnitEntity
+
+native UnitAlive(unit id) returns boolean
+
+public function IUnitEntity.addAbility(int abil) returns boolean
+	return UnitAddAbility(this.getUnit(), abil)
+
+public function IUnitEntity.addHP(real val)
+	this.getUnit().addState(UNIT_STATE_LIFE, val)
+
+public function IUnitEntity.addItemHandle(item whichItem) returns boolean
+	return UnitAddItem(this.getUnit(), whichItem)
+
+public function IUnitEntity.addItemById(int itemId) returns item
+	return UnitAddItemById(this.getUnit(), itemId)
+
+@deprecated("Use addItemById method instead.")
+public function IUnitEntity.addItem(int itemId) returns item
+	return UnitAddItemById(this.getUnit(), itemId)
+
+public function IUnitEntity.addItemToSlot(int id, int slot) returns bool
+	return UnitAddItemToSlotById(this.getUnit(), id, slot)
+
+public function IUnitEntity.addMana(real val)
+	this.getUnit().addState(UNIT_STATE_MANA, val)
+
+public function IUnitEntity.addState(unitstate state, real value)
+	SetUnitState(this.getUnit(), state, this.getUnit().getState(state) + value)
+
+public function IUnitEntity.addXp(int toAdd, boolean showEyeCandy)
+	AddHeroXP(this.getUnit(), toAdd, showEyeCandy)
+
+public function IUnitEntity.getXp() returns int
+	return GetHeroXP(this.getUnit())
+
+/** Share vision of that unit with a player **/
+public function IUnitEntity.shareVision(player whichPlayer)
+	UnitShareVision(this.getUnit(), whichPlayer, true)
+
+/** Set sharing of vision with a player **/
+public function IUnitEntity.shareVision(player whichPlayer, bool share)
+	UnitShareVision(this.getUnit(), whichPlayer, share)
+
+public function IUnitEntity.setXp(int newXpVal, bool showEyeCandy)
+	SetHeroXP(this.getUnit(), newXpVal, showEyeCandy)
+
+public function IUnitEntity.suspendXp(boolean suspend)
+	SuspendHeroXP(this.getUnit(), suspend)
+
+public function IUnitEntity.isSuspendedXp() returns boolean
+	return IsSuspendedXP(this.getUnit())
+
+public function IUnitEntity.getLevel() returns int
+	return this.getUnit().isType(UNIT_TYPE_HERO) ? GetHeroLevel(this.getUnit()) : GetUnitLevel(this.getUnit())
+
+public function IUnitEntity.setLevel(int level, boolean showEyeCandy)
+	SetHeroLevel(this.getUnit(), level, showEyeCandy)
+
+public function IUnitEntity.addLevels(int toAdd, boolean showEyeCandy)
+	SetHeroLevel(this.getUnit(), this.getUnit().getLevel() + toAdd, showEyeCandy)
+
+public function IUnitEntity.removeLevels(int toRemove) returns bool
+	return UnitStripHeroLevel(this.getUnit(), toRemove)
+
+public function IUnitEntity.getStr(bool includeBonuses) returns int
+	return GetHeroStr(this.getUnit(), includeBonuses)
+
+public function IUnitEntity.getAgi(bool includeBonuses) returns int
+	return GetHeroAgi(this.getUnit(), includeBonuses)
+
+public function IUnitEntity.getInt(bool includeBonuses) returns int
+	return GetHeroInt(this.getUnit(), includeBonuses)
+
+public function IUnitEntity.setStr(int value)
+	SetHeroStr(this.getUnit(), value, true)
+
+public function IUnitEntity.setAgi(int value)
+	SetHeroAgi(this.getUnit(), value, true)
+
+public function IUnitEntity.setInt(int value)
+	SetHeroInt(this.getUnit(), value, true)
+
+public function IUnitEntity.addStr(int value)
+	SetHeroStr(this.getUnit(), this.getUnit().getStr(false) + value, true)
+
+public function IUnitEntity.addAgi(int value)
+	SetHeroAgi(this.getUnit(), this.getUnit().getAgi(false) + value, true)
+
+public function IUnitEntity.addInt(int value)
+	SetHeroInt(this.getUnit(), this.getUnit().getInt(false) + value, true)
+
+public function IUnitEntity.addSkillPoints(int value) returns bool
+	return UnitModifySkillPoints(this.getUnit(), value)
+
+public function IUnitEntity.setSkillPoints(int value) returns bool
+	return UnitModifySkillPoints(this.getUnit(), value - this.getUnit().getSkillPoints())
+
+public function IUnitEntity.getSkillPoints() returns int
+	return GetHeroSkillPoints(this.getUnit())
+
+public function IUnitEntity.selectSkill(int abilcode)
+	SelectHeroSkill(this.getUnit(), abilcode)
+
+public function IUnitEntity.damageTarget(widget target, real amount, bool attack, bool ranged, attacktype attackType, damagetype damageType, weapontype weaponType)
+	UnitDamageTarget(this.getUnit(), target, amount, attack, ranged, attackType, damageType, weaponType)
+
+public function IUnitEntity.damageTarget(widget target, real amount, bool attack, bool ranged, attacktype attackType)
+	UnitDamageTarget(this.getUnit(), target, amount, attack, ranged, attackType, DAMAGE_TYPE_UNIVERSAL, WEAPON_TYPE_WHOKNOWS)
+
+public function IUnitEntity.damageTarget(widget target, real amount)
+	UnitDamageTarget(this.getUnit(), target, amount, false, false, ATTACK_TYPE_CHAOS, DAMAGE_TYPE_UNIVERSAL, WEAPON_TYPE_WHOKNOWS)
+
+public function IUnitEntity.damageTarget(widget target, real amount, attacktype attacktyp)
+	UnitDamageTarget(this.getUnit(), target, amount, false, false, attacktyp, DAMAGE_TYPE_UNIVERSAL, WEAPON_TYPE_WHOKNOWS)
+
+/** Kills a unit by blowing it up */
+public function IUnitEntity.explode()
+	this.getUnit().setExploded(true)
+	this.getUnit().kill()
+
+public function IUnitEntity.getAbilityLevel(int id) returns int
+	return GetUnitAbilityLevel(this.getUnit(), id)
+
+public function IUnitEntity.getUnitAcquireRange() returns real
+	return GetUnitAcquireRange(this.getUnit())
+
+/** Returns the current order of the unit */
+public function IUnitEntity.getCurrentOrder() returns int
+	return GetUnitCurrentOrder(this.getUnit())
+
+@deprecated("Use .getFacingAngle() instead.") public function IUnitEntity.getFacing() returns real
+	return GetUnitFacing(this.getUnit())
+
+/** Returns the facing of the unit as an angle.
+	Use this.getUnit() to avoid confusion between radians and degrees */
+public function IUnitEntity.getFacingAngle() returns angle
+	return GetUnitFacing(this.getUnit()).asAngleDegrees()
+
+public function IUnitEntity.getFlyHeight() returns real
+	return GetUnitFlyHeight(this.getUnit())
+
+public function IUnitEntity.getFoodUsed() returns int
+	return GetFoodUsed(this.getUnit().getTypeId())
+
+public function IUnitEntity.getHP() returns real
+	return this.getUnit().getState(UNIT_STATE_LIFE)
+
+public function IUnitEntity.getMana() returns real
+	return this.getUnit().getState(UNIT_STATE_MANA)
+
+public function IUnitEntity.getMaxHP() returns real
+	return this.getUnit().getState(UNIT_STATE_MAX_LIFE)
+
+public function IUnitEntity.getMaxMana() returns real
+	return this.getUnit().getState(UNIT_STATE_MAX_MANA)
+
+/** Get units current missing health. */
+public function IUnitEntity.getMissingHP() returns real
+	return this.getUnit().getMaxHP() - this.getUnit().getHP()
+
+/** Get units current missing mana. */
+public function IUnitEntity.getMissingMana() returns real
+	return this.getUnit().getMaxMana() - this.getUnit().getMana()
+
+
+public function IUnitEntity.getMoveSpeed() returns real
+	return GetUnitMoveSpeed(this.getUnit())
+
+public function IUnitEntity.getName() returns string
+	return GetUnitName(this.getUnit())
+
+public function IUnitEntity.getProperName() returns string
+	return GetHeroProperName(this.getUnit())
+
+public function IUnitEntity.getOwner() returns player
+	return GetOwningPlayer(this.getUnit())
+
+public function IUnitEntity.getPos() returns vec2
+	return vec2(this.getUnit().getX(), this.getUnit().getY())
+
+public function IUnitEntity.getPos3Real() returns vec3
+	return this.getUnit().getPos().withRealZ(this.getUnit())
+
+public function IUnitEntity.getPos3Fly() returns vec3
+	return vec3(this.getUnit().getX(), this.getUnit().getY(), this.getUnit().getFlyHeight())
+
+public function IUnitEntity.getPos3Zero() returns vec3
+	return vec3(this.getUnit().getX(), this.getUnit().getY(), 0.)
+
+public function IUnitEntity.getPos3with(real z) returns vec3
+	return vec3(this.getUnit().getX(), this.getUnit().getY(), z)
+
+/** Returns the prop window of the unit as angle. */
+public function IUnitEntity.getPropWindow() returns angle
+	return angle(GetUnitPropWindow(this.getUnit()))
+
+public function IUnitEntity.getState(unitstate state) returns real
+	return GetUnitState(this.getUnit(), state)
+
+public function IUnitEntity.getTurnSpeed() returns real
+	return GetUnitTurnSpeed(this.getUnit())
+
+public function IUnitEntity.getTypeId() returns int
+	return GetUnitTypeId(this.getUnit())
+
+public function IUnitEntity.getUserData() returns int
+	return GetUnitUserData(this.getUnit())
+
+public function IUnitEntity.getPointValue() returns int
+	return GetUnitPointValue(this.getUnit())
+
+public function IUnitEntity.getX() returns real
+	return GetUnitX(this.getUnit())
+
+public function IUnitEntity.getY() returns real
+	return GetUnitY(this.getUnit())
+
+public function IUnitEntity.hasAbility(int id) returns boolean
+	return (GetUnitAbilityLevel(this.getUnit(), id) > 0)
+
+public function IUnitEntity.hasItem(item whichItem) returns boolean
+	return UnitHasItem(this.getUnit(), whichItem)
+
+public function IUnitEntity.hasItemById(int itemId) returns boolean
+	return this.getUnit().getItemById(itemId) != null
+
+/** Returns the first item of the specific type from the unit's inventory,
+	or null if none is present */
+public function IUnitEntity.getItemById(int itemId) returns item
+	item itm = null
+	for slot = 0 to this.getUnit().inventorySize() - 1
+		if this.getUnit().itemInSlot(slot).getTypeId() == itemId
+			itm = this.getUnit().itemInSlot(slot)
+			break
+	return itm
+
+public function IUnitEntity.hide()
+	ShowUnit(this.getUnit(), false)
+
+public function IUnitEntity.isHidden() returns bool
+	return IsUnitHidden(this.getUnit())
+
+public function IUnitEntity.inventorySize() returns int
+	return UnitInventorySize(this.getUnit())
+
+/** Returns the number of items equipped. */
+public function IUnitEntity.itemCount() returns int
+	int result = 0
+	for slot = 0 to this.getUnit().inventorySize() - 1
+		if this.getUnit().itemInSlot(slot) != null
+			result++
+	return result
+
+/** Checks if unit inventory is full. */
+public function IUnitEntity.isInventoryFull() returns boolean
+	return this.getUnit().itemCount() == this.getUnit().inventorySize()
+
+/** Checks if the unit is alive using the UnitAlive native */
+public function IUnitEntity.isAlive() returns boolean
+	return UnitAlive(this.getUnit())
+
+/** Checks whether a unit is within range of a point.
+	Takes into account the units collision size **/
+public function IUnitEntity.isInRange(vec2 pos, real distance) returns bool
+	return IsUnitInRangeXY(this.getUnit(), pos.x, pos.y, distance)
+
+/** Checks whether a unit is an enemy of the given player **/
+public function IUnitEntity.isEnemyOf(player whichPlayer) returns bool
+	return IsUnitEnemy(this.getUnit(), whichPlayer)
+
+/** Checks whether two units are enemies */
+public function IUnitEntity.isEnemyOf(unit u) returns bool
+	return this.getUnit() != null and u != null and this.getUnit().isEnemyOf(u.getOwner())
+
+/** Checks whether a unit is an ally of the given player */
+public function IUnitEntity.isAllyOf(player whichPlayer) returns bool
+	return this.getUnit() != null and IsUnitAlly(this.getUnit(), whichPlayer)
+
+/** Checks whether two units are allies */
+public function IUnitEntity.isAllyOf(unit u) returns bool
+	return this.getUnit() != null and u != null and this.getUnit().isAllyOf(u.getOwner())
+
+public function IUnitEntity.issueImmediateOrder(string order) returns boolean
+	return IssueImmediateOrder(this.getUnit(), order)
+
+public function IUnitEntity.issueImmediateOrderById(int id) returns boolean
+	return IssueImmediateOrderById(this.getUnit(), id)
+
+public function IUnitEntity.issuePointOrder(string order, vec2 target) returns boolean
+	return IssuePointOrder(this.getUnit(), order, target.x, target.y)
+
+public function IUnitEntity.issuePointOrderById(int id, vec2 target) returns boolean
+	return IssuePointOrderById(this.getUnit(), id, target.x, target.y)
+
+public function IUnitEntity.issueRallyPoint(vec2 pos)
+	this.getUnit().issuePointOrder("rally", pos)
+
+public function IUnitEntity.issueTargetOrder(string order, widget targetWidget) returns boolean
+	return IssueTargetOrder(this.getUnit(),order,targetWidget)
+
+public function IUnitEntity.issueTargetOrderById(int id, widget target) returns boolean
+	return IssueTargetOrderById(this.getUnit(), id, target)
+
+public function IUnitEntity.itemInSlot(int inventoryIndex) returns item
+	return UnitItemInSlot(this.getUnit(), inventoryIndex)
+
+/** Retrieves slot number for speficied item or -1 if not found. */
+public function IUnitEntity.getItemSlot(item whichItem) returns int
+	int result = -1
+	if this.getUnit().hasItem(whichItem)
+		for slot = 0 to this.getUnit().inventorySize() - 1
+			if this.getUnit().itemInSlot(slot) == whichItem
+				result = slot
+				break
+	return result
+
+public function IUnitEntity.kill()
+	KillUnit(this.getUnit())
+
+public function IUnitEntity.makeAbilityPermanent(int abil, boolean flag) returns boolean
+	return UnitMakeAbilityPermanent(this.getUnit(), flag, abil)
+
+public function IUnitEntity.isPaused() returns boolean
+	return IsUnitPaused(this.getUnit())
+
+public function IUnitEntity.pause()
+	PauseUnit(this.getUnit(), true)
+
+public function IUnitEntity.pauseEx()
+	BlzPauseUnitEx(this.getUnit(), true)
+
+public function IUnitEntity.unpause()
+	PauseUnit(this.getUnit(), false)
+
+public function IUnitEntity.unpauseEx()
+	BlzPauseUnitEx(this.getUnit(), false)
+
+public function IUnitEntity.queueAnimation(string animation)
+	QueueUnitAnimation(this.getUnit(), animation)
+
+public function IUnitEntity.remove()
+	RemoveUnit(this.getUnit())
+
+public function IUnitEntity.removeAbility(int abil) returns boolean
+	return UnitRemoveAbility(this.getUnit(), abil)
+
+public function IUnitEntity.removeItem(item itm)
+	UnitRemoveItem(this.getUnit(), itm)
+
+/** Removes the first item of type itemId carried by the unit
+	returns true if an item was found and removed */
+public function IUnitEntity.removeItemById(int itemId) returns boolean
+	boolean item_found = false
+	for slot = 0 to this.getUnit().inventorySize()-1
+		if this.getUnit().itemInSlot(slot).getTypeId() == itemId
+			this.getUnit().removeItem(this.getUnit().itemInSlot(slot))
+			item_found = true
+			break
+	return item_found
+
+/** Returns the number of slots containing the given item type */
+public function IUnitEntity.itemCount(int itemTypeId) returns int
+	var count = 0
+	for i = 0 to 5
+		if this.getUnit().itemInSlot(i).getTypeId() == itemTypeId
+			count++
+	return count
+
+public function IUnitEntity.removeItemFromSlot(int slot) returns item
+	return UnitRemoveItemFromSlot(this.getUnit(), slot)
+
+public function IUnitEntity.dropItemPoint(item itm, vec2 pos) returns boolean
+	return UnitDropItemPoint(this.getUnit(), itm, pos.x, pos.y)
+
+public function IUnitEntity.dropItemSlot(item itm, int slot) returns boolean
+	return UnitDropItemSlot(this.getUnit(), itm, slot)
+
+public function IUnitEntity.dropItemTarget(item itm, widget target) returns boolean
+	return UnitDropItemTarget(this.getUnit(), itm, target)
+
+public function IUnitEntity.useItem(item itm) returns boolean
+	return UnitUseItem(this.getUnit(), itm)
+
+public function IUnitEntity.useItemPoint(item itm, vec2 pos) returns boolean
+	return UnitUseItemPoint(this.getUnit(), itm, pos.x, pos.y)
+
+public function IUnitEntity.useItemTarget(item itm, widget target) returns boolean
+	return UnitUseItemTarget(this.getUnit(), itm, target)
+
+public function IUnitEntity.revive(vec2 pos, boolean doEyecandy)
+	ReviveHero(this.getUnit(), pos.x, pos.y, doEyecandy)
+
+public function IUnitEntity.getAbility(int abilId) returns ability
+	return BlzGetUnitAbility(this.getUnit(), abilId)
+
+public function IUnitEntity.getAbilityByIndex(int index) returns ability
+	return BlzGetUnitAbility(this.getUnit(), index)
+
+public function IUnitEntity.setAbilityLevel(int abilId, int lvl)
+	SetUnitAbilityLevel(this.getUnit(), abilId, lvl)
+
+public function IUnitEntity.setAnimation(string name)
+	SetUnitAnimation(this.getUnit(), name)
+
+public function IUnitEntity.setAnimation(int index)
+	SetUnitAnimationByIndex(this.getUnit(), index)
+
+public function IUnitEntity.lookAt(string bone, unit target, vec3 offset)
+	SetUnitLookAt(this.getUnit(), bone, target, offset.x, offset.y, offset.z)
+
+public function IUnitEntity.lookAt(string bone, unit target)
+	this.getUnit().lookAt(bone, target, ZERO3)
+
+public function IUnitEntity.resetLookAt()
+	ResetUnitLookAt(this.getUnit())
+
+public function IUnitEntity.setColor(playercolor c)
+	SetUnitColor(this.getUnit(), c)
+
+/** Sets whether a unit explodes on death */
+public function IUnitEntity.setExploded(boolean exploded)
+	SetUnitExploded(this.getUnit(), exploded)
+
+public function IUnitEntity.setFacing(angle a)
+	SetUnitFacing(this.getUnit(), a.degrees())
+
+public function IUnitEntity.setFlyHeight(real height, real rate)
+	SetUnitFlyHeight(this.getUnit(), height, rate)
+
+public function IUnitEntity.setHP(real hp)
+	this.getUnit().setState(UNIT_STATE_LIFE, hp)
+
+public function IUnitEntity.setInvulnerable(boolean flag)
+	SetUnitInvulnerable(this.getUnit(), flag)
+
+public function IUnitEntity.setMana(real val)
+	this.getUnit().setState(UNIT_STATE_MANA, val)
+
+public function IUnitEntity.setMoveSpeed(real speed)
+	SetUnitMoveSpeed(this.getUnit(), speed)
+
+public function IUnitEntity.setOwner(player p, boolean changeColor)
+	SetUnitOwner(this.getUnit(), p, changeColor)
+
+public function IUnitEntity.setPathing(boolean value)
+	SetUnitPathing(this.getUnit(),value)
+
+/** Sets the unit's position using the SetUnitPosition native.
+	this.getUnit() native comes with some side effects like additional
+	position verification and stopping the target IUnitEntity. */
+public function IUnitEntity.setPos(vec2 pos)
+	SetUnitPosition(this.getUnit(), pos.x, pos.y)
+
+public function IUnitEntity.setPosFly(vec3 pos)
+	this.getUnit().setPos(pos.x, pos.y)
+	this.getUnit().setFlyHeight(pos.z, 0)
+
+public function IUnitEntity.setPosReal(vec3 pos)
+	this.getUnit().setPos(pos.x, pos.y)
+	this.getUnit().setFlyHeight(pos.z - pos.getTerrainZ(), 0)
+
+public function IUnitEntity.setPos(real x, real y)
+	SetUnitPosition(this.getUnit(), x, y)
+
+@deprecated("Use .setPropWindow(angle value) instead.") public function IUnitEntity.setPropWindow(real radians)
+	SetUnitPropWindow(this.getUnit(), radians)
+
+/**	A prop window of 0 prevents the unit from moving, but
+	it can still turn around.*/
+public function IUnitEntity.setPropWindow(angle value)
+	SetUnitPropWindow(this.getUnit(), value.radians())
+
+public function IUnitEntity.setScale(real scale)
+	SetUnitScale(this.getUnit(), scale, scale, scale)
+
+public function IUnitEntity.setState(unitstate state, real value)
+	SetUnitState(this.getUnit(), state, value)
+
+public function IUnitEntity.setTimeScale(real scale)
+	SetUnitTimeScale(this.getUnit(), scale)
+
+public function IUnitEntity.setTimedLife(real time)
+	UnitApplyTimedLife(this.getUnit(), 'BTLF', time)
+
+public function IUnitEntity.setTurnSpeed(real speed)
+	SetUnitTurnSpeed(this.getUnit(), speed)
+
+public function IUnitEntity.setUseFood(boolean flag)
+	SetUnitUseFood(this.getUnit(), flag)
+
+public function IUnitEntity.setUserData(int data)
+	SetUnitUserData(this.getUnit(), data)
+
+public function IUnitEntity.setVertexColor(int r, int g, int b, int a)
+	SetUnitVertexColor(this.getUnit(), r, g, b, a)
+
+public function IUnitEntity.setX(real x)
+	SetUnitX(this.getUnit(), x)
+
+/** Sets the coordinmates of the unit to the given position.
+	Uses the SetUnitX/Y natives */
+public function IUnitEntity.setXY(vec2 pos)
+	this.getUnit()..setX(pos.x)..setY(pos.y)
+
+/** Sets the coordinmates of the unit to the given position.
+	Uses the SetUnitX/Y natives */
+public function IUnitEntity.setXY(vec3 pos)
+	this.getUnit()..setX(pos.x)..setY(pos.y)
+
+/** Sets the coordinmates of the unit to the given position.
+	Z is being set as flyheight. Uses the SetUnitX/Y natives */
+public function IUnitEntity.setXYZ(vec3 pos)
+	this.getUnit()..setX(pos.x)..setY(pos.y)
+	..setFlyHeight(pos.z, 0)
+
+public function IUnitEntity.setXYZReal(vec3 pos)
+	SetUnitX(this.getUnit(), pos.x)
+	SetUnitY(this.getUnit(), pos.y)
+	SetUnitFlyHeight(this.getUnit(), pos.z - pos.getTerrainZ(), 0)
+
+public function IUnitEntity.setY(real y)
+	SetUnitY(this.getUnit(), y)
+
+public function IUnitEntity.show()
+	ShowUnit(this.getUnit(), true)
+
+public function IUnitEntity.subHP(real val)
+	this.getUnit().subState(UNIT_STATE_LIFE, val)
+
+public function IUnitEntity.subMana(real val)
+	this.getUnit().subState(UNIT_STATE_MANA, val)
+
+public function IUnitEntity.subState(unitstate state, real value)
+	SetUnitState(this.getUnit(), state, this.getUnit().getState(state) - value)
+
+/** Cancels the current order */
+public function IUnitEntity.abortOrder() returns boolean
+	if IsUnitPaused(this.getUnit())
+		return false
+	else
+		PauseUnit(this.getUnit(), true)
+		IssueImmediateOrder(this.getUnit(), "stop")
+		PauseUnit(this.getUnit(), false)
+	return true
+
+public function IUnitEntity.resetAbilityCooldown(int abilId)
+	let lvl = this.getUnit().getAbilityLevel(abilId)
+	this.getUnit()..removeAbility(abilId)..addAbility(abilId)..setAbilityLevel(abilId, lvl)
+
+/** Reset all cooldowns of the unit **/
+public function IUnitEntity.resetCooldown()
+	UnitResetCooldown(this.getUnit())
+
+public function IUnitEntity.getDefaultMovespeed() returns real
+	return GetUnitDefaultMoveSpeed(this.getUnit())
+
+/** Returns the default prop window of the unit as angle.*/
+public function IUnitEntity.getDefaultPropWindow() returns angle
+	return GetUnitDefaultPropWindow(this.getUnit()).fromDeg()
+
+public function IUnitEntity.getDefaultTurnSpeed() returns real
+	return GetUnitDefaultTurnSpeed(this.getUnit())
+
+public function IUnitEntity.getDefaultAcquireRange() returns real
+	return GetUnitDefaultAcquireRange(this.getUnit())
+
+public function IUnitEntity.getDefaultFlyHeight() returns real
+	return GetUnitDefaultFlyHeight(this.getUnit())
+
+public function IUnitEntity.getIntMaxHP() returns int
+	return BlzGetUnitMaxHP(this.getUnit())
+
+public function IUnitEntity.setMaxHP(int hp)
+	BlzSetUnitMaxHP(this.getUnit(), hp)
+
+/** Changes a unit's maximum hp, adjusting the
+	current hp to keep the same ratio.*/
+public function IUnitEntity.setMaxHP(int hp, boolean keepRatio)
+	if keepRatio
+		let ratio = this.getUnit().getHP()/this.getUnit().getMaxHP()
+		BlzSetUnitMaxHP(this.getUnit(), hp)
+		this.getUnit().setHP(ratio * hp)
+	else
+		BlzSetUnitMaxHP(this.getUnit(), hp)
+
+public function IUnitEntity.getIntMaxMana() returns int
+	return BlzGetUnitMaxMana(this.getUnit())
+
+public function IUnitEntity.setMaxMana(int mana)
+	BlzSetUnitMaxMana(this.getUnit(), mana)
+
+/** Changes a unit's maximum mana, adjusting the
+	current mana to keep the same ratio.
+	If the current unit's maximum mana is zero,
+	the ratio will be considered zero.*/
+public function IUnitEntity.setMaxMana(int mana, boolean keepRatio)
+	if keepRatio
+		let maxMana = this.getUnit().getMaxMana()
+		let ratio = maxMana == 0 ? 0 : this.getUnit().getMana() / maxMana
+		BlzSetUnitMaxMana(this.getUnit(), mana)
+		this.getUnit().setMana(ratio * mana)
+	else
+		BlzSetUnitMaxMana(this.getUnit(), mana)
+
+public function IUnitEntity.setName(string name)
+	BlzSetUnitName(this.getUnit(), name)
+
+public function IUnitEntity.setProperName(string name)
+	BlzSetHeroProperName(this.getUnit(), name)
+
+public function IUnitEntity.getBaseDamage(int weaponIndex) returns int
+	return BlzGetUnitBaseDamage(this.getUnit(), weaponIndex)
+
+public function IUnitEntity.setBaseDamage(int baseDamage, int weaponIndex)
+	BlzSetUnitBaseDamage(this.getUnit(), baseDamage, weaponIndex)
+
+public function IUnitEntity.getDiceNumber(int weaponIndex) returns int
+	return BlzGetUnitDiceNumber(this.getUnit(), weaponIndex)
+
+public function IUnitEntity.setDiceNumber(int diceNumber, int weaponIndex)
+	BlzSetUnitDiceNumber(this.getUnit(), diceNumber, weaponIndex)
+
+public function IUnitEntity.getDiceSides(int weaponIndex) returns int
+	return BlzGetUnitDiceSides(this.getUnit(), weaponIndex)
+
+public function IUnitEntity.setDiceSides(int diceSides, int weaponIndex)
+	BlzSetUnitDiceSides(this.getUnit(), diceSides, weaponIndex)
+
+public function IUnitEntity.getAttackCooldown(int weaponIndex) returns real
+	return BlzGetUnitAttackCooldown(this.getUnit(), weaponIndex)
+
+public function IUnitEntity.setAttackCooldown(real cooldown, int weaponIndex)
+	BlzSetUnitAttackCooldown(this.getUnit(), cooldown, weaponIndex)
+
+public function IUnitEntity.getArmor() returns real
+	return BlzGetUnitArmor(this.getUnit())
+
+public function IUnitEntity.setArmor(real armorAmount)
+	BlzSetUnitArmor(this.getUnit(), armorAmount)
+
+public function IUnitEntity.hideAbility(int abilId, boolean flag)
+	BlzUnitHideAbility(this.getUnit(), abilId, flag)
+
+public function IUnitEntity.disableAbility(int abilId, boolean flag, boolean hideUI)
+	BlzUnitDisableAbility(this.getUnit(), abilId, flag, hideUI)
+
+public function IUnitEntity.cancelTimedLife()
+	BlzUnitCancelTimedLife(this.getUnit())
+
+public function IUnitEntity.isSelectable() returns boolean
+	return BlzIsUnitSelectable(this.getUnit())
+
+public function IUnitEntity.isInvulnerable() returns boolean
+	return BlzIsUnitInvulnerable(this.getUnit())
+
+public function IUnitEntity.interruptAttack()
+	BlzUnitInterruptAttack(this.getUnit())
+
+public function IUnitEntity.getCollisionSize() returns real
+	return BlzGetUnitCollisionSize(this.getUnit())
+
+public function IUnitEntity.setAbilityCooldown(int abilId, int level, real cooldown)
+	BlzSetUnitAbilityCooldown(this.getUnit(), abilId, level, cooldown)
+
+public function IUnitEntity.getAbilityCooldown(int abilId, int level) returns real
+	return BlzGetUnitAbilityCooldown(this.getUnit(), abilId, level)
+
+public function IUnitEntity.getAbilityCooldownRemaining(int abilId) returns real
+	return BlzGetUnitAbilityCooldownRemaining(this.getUnit(), abilId)
+
+public function IUnitEntity.endAbilityCooldown(int abilCode)
+	BlzEndUnitAbilityCooldown(this.getUnit(), abilCode)
+
+public function IUnitEntity.getAbilityManaCost(int abilId, int level) returns int
+	return BlzGetUnitAbilityManaCost(this.getUnit(), abilId, level)
+
+public function IUnitEntity.setAbilityManaCost(int abilId, int level, int manaCost)
+	BlzSetUnitAbilityManaCost(this.getUnit(), abilId, level, manaCost)
+	
+@deprecated("Use getPos instead.")
+public function IUnitEntity.getLoc() returns location
+	return GetUnitLoc(this.getUnit())
+
+public function IUnitEntity.getLocalZ() returns real
+	return BlzGetLocalUnitZ(this.getUnit())
+
+public function IUnitEntity.isIllusion() returns bool
+	return IsUnitIllusion(this.getUnit())
+
+public function IUnitEntity.incAbilityLevel(int abilityId)
+	IncUnitAbilityLevel(this.getUnit(), abilityId)
+
+public function IUnitEntity.decAbilityLevel(int abilityId)
+	DecUnitAbilityLevel(this.getUnit(), abilityId)
+
+/** Change unit attack cooldown by given percentage. Negative values are possible as well. 
+	Returns the new attack cooldown time of the IUnitEntity. */
+@configurable public function IUnitEntity.setAttackCooldownPercChange(real attackCooldownPercChange, int weaponIndex) returns real
+	let newSpeed = this.getUnit().getAttackCooldown(weaponIndex)/(1+attackCooldownPercChange)
+	this.getUnit().setAttackCooldown(newSpeed, weaponIndex)
+	return newSpeed
+   
+/** Change unit movement speed by given percentage. Negative values are possible as well. 
+	Returns the new speed of the IUnitEntity.
+	ex.: using 0.25 on unit with speed 400 will make the new speed 500. */
+@configurable public function IUnitEntity.setMoveSpeedPercChange(real movespeedPercChange) returns real
+	let oldSpeed = this.getUnit().getMoveSpeed()
+	let newSpeed = oldSpeed + (oldSpeed*movespeedPercChange)
+	this.getUnit().setMoveSpeed(newSpeed)
+	return newSpeed
+
+// Unit fields
+public function IUnitEntity.getField(unitbooleanfield field) returns bool
+	return BlzGetUnitBooleanField(this.getUnit(), field)
+
+public function IUnitEntity.getField(unitintegerfield field) returns int
+	return BlzGetUnitIntegerField(this.getUnit(), field)
+
+public function IUnitEntity.getField(unitrealfield field) returns real
+	return BlzGetUnitRealField(this.getUnit(), field)
+
+public function IUnitEntity.getField(unitstringfield field) returns string
+	return BlzGetUnitStringField(this.getUnit(), field)
+
+public function IUnitEntity.setField(unitbooleanfield field, bool value) returns bool
+	return BlzSetUnitBooleanField(this.getUnit(), field, value)
+
+public function IUnitEntity.setField(unitintegerfield field, int value) returns bool
+	return BlzSetUnitIntegerField(this.getUnit(), field, value)
+
+public function IUnitEntity.setField(unitrealfield field, real value) returns bool
+	return BlzSetUnitRealField(this.getUnit(), field, value)
+
+public function IUnitEntity.setField(unitstringfield field, string value) returns bool
+	return BlzSetUnitStringField(this.getUnit(), field, value)
+	
+// Unit Weapon fields
+public function IUnitEntity.getFieldWeapon(unitweaponbooleanfield field, int weaponIndex) returns bool
+	return BlzGetUnitWeaponBooleanField(this.getUnit(), field, weaponIndex)
+
+public function IUnitEntity.getFieldWeapon(unitweaponintegerfield field, int weaponIndex) returns int
+	return BlzGetUnitWeaponIntegerField(this.getUnit(), field, weaponIndex)
+
+public function IUnitEntity.getFieldWeapon(unitweaponrealfield field, int weaponIndex) returns real
+	return BlzGetUnitWeaponRealField(this.getUnit(), field, weaponIndex)
+
+public function IUnitEntity.getFieldWeapon(unitweaponstringfield field, int weaponIndex) returns string
+	return BlzGetUnitWeaponStringField(this.getUnit(), field, weaponIndex)
+
+public function IUnitEntity.setFieldWeapon(unitweaponbooleanfield field, int weaponIndex, bool value) returns bool
+	return BlzSetUnitWeaponBooleanField(this.getUnit(), field, weaponIndex, value)
+
+public function IUnitEntity.setFieldWeapon(unitweaponintegerfield field, int weaponIndex, int value) returns bool
+	return BlzSetUnitWeaponIntegerField(this.getUnit(), field, weaponIndex, value)
+
+public function IUnitEntity.setFieldWeapon(unitweaponrealfield field, int weaponIndex, real value) returns bool
+	return BlzSetUnitWeaponRealField(this.getUnit(), field, weaponIndex, value)
+
+public function IUnitEntity.setFieldWeapon(unitweaponstringfield field, int weaponIndex, string value) returns bool
+	return BlzSetUnitWeaponStringField(this.getUnit(), field, weaponIndex, value)

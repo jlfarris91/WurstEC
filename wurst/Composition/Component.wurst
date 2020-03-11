@@ -1,0 +1,46 @@
+package Component
+import IComponent
+import IComposite
+
+// ============================================================================
+public abstract class Component implements IComponent
+  protected IComposite m_owner
+  private bool m_enabled
+
+  // --------------------------------------------------------------------------
+  construct(IComposite owner)
+    m_owner = owner
+
+  // --------------------------------------------------------------------------
+  ondestroy
+    if (m_enabled)
+      onDisabled()
+
+  // --------------------------------------------------------------------------
+  override function getOwner() returns IComposite
+    return m_owner
+
+  // --------------------------------------------------------------------------
+  override function setEnabled(bool enabled)
+    if (m_enabled != enabled)
+      if (enabled)
+        onEnabled()
+      else
+        onDisabled()
+      m_enabled = enabled
+
+  // --------------------------------------------------------------------------
+  override function getEnabled() returns bool
+    return m_enabled
+
+  // --------------------------------------------------------------------------
+  function initialize()
+    skip
+
+  // --------------------------------------------------------------------------
+  protected function onEnabled()
+    skip
+
+  // --------------------------------------------------------------------------
+  protected function onDisabled()
+    skip
